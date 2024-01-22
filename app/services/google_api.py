@@ -1,9 +1,12 @@
+from datetime import datetime
 from aiogoogle import Aiogoogle
 
-from app.services.constants import TABLE_VALUES, PERMISSIONS_BODY, SPREADSHEET_BODY
+from app.services.constants import FORMAT, TABLE_VALUES, PERMISSIONS_BODY, SPREADSHEET_BODY
 
 
 async def spreadsheets_create(wrapper_services: Aiogoogle) -> str:
+    date_time_now = datetime.now().strftime(FORMAT)
+    SPREADSHEET_BODY['properties']['title'] = f'Отчет на {date_time_now}'
     service = await wrapper_services.discover('sheets', 'v4')
     response = await wrapper_services.as_service_account(
         service.spreadsheets.create(json=SPREADSHEET_BODY)
@@ -30,6 +33,8 @@ async def spreadsheets_update_value(
         projects: list,
         wrapper_services: Aiogoogle
 ) -> None:
+    date_time_now = datetime.now().strftime(FORMAT)
+    TABLE_VALUES[0][1] = date_time_now
     service = await wrapper_services.discover('sheets', 'v4')
     for project in projects:
         new_row = [
